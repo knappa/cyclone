@@ -1,8 +1,9 @@
 # Fill files in algorun_info folder and put your source code in src folder
 # Don't change the following three lines
-FROM algorun/algorun
+FROM algorun/algorun:20.04
 
 RUN apt-get update && \
+DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata && \
 apt-get install -y wget build-essential cmake && \
 apt-get clean && \
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -15,7 +16,7 @@ ADD ./src /home/algorithm/src/
 # Install any algorithm dependencies here
 RUN mkdir /home/algorithm/build && \
 cd /home/algorithm/build && \
-cmake ../src/ && \
+cmake -DCMAKE_BUILD_TYPE=Release ../src/ && \
 make && \
 mv /home/algorithm/build/simFDS /usr/bin/ && \
 mv /home/algorithm/src/runner.sh /usr/bin/

@@ -4,6 +4,34 @@
 #include <algorithm>
 #include <iterator>
 #include <iostream>
+#include <regex>
+
+std::string translateAndOrNotXor(const std::string& s)
+{
+  // TODO (created 19 Jan 2021: this doesn't handle A or(A and B) (paren after or, and, xor).
+  // fix this.  Can this code be simplified?
+  // possibly change to a translate(string, word, replacement word) (perhaps no regex here?)
+  std::regex e1 ("(\\bNOT )");
+  std::regex e2 ("(\\bnot )");
+  std::regex e3 ("(\\bNOT\\()");
+  std::regex e4 ("(\\bnot\\()");
+  std::regex e5 ("(\\bAND) +");
+  std::regex e6 ("(\\band) +");
+  std::regex e7 ("(\\bOR +)");
+  std::regex e8 ("(\\bor +)");
+  std::regex e9 ("(\\bXOR +)");
+  std::regex e10 ("(\\bxor +)");
+  std::vector<std::regex> reps = {e1, e2, e3, e4, e5, e6, e7, e8, e9, e10};
+  std::vector<std::string> strs = {"~", "~", "~(", "~(", "*", "*", "|", "|", "+", "+"};
+
+  auto result = s;
+  for (int i = 0; i < reps.size(); ++i)
+    {
+      result = std::regex_replace(result, reps[i], strs[i]);
+      std::cout << result << std::endl;
+    }
+  return result;
+}
 
 Polynomial::Polynomial(int numstates, int numvars)
   : mNumStates(numstates),
@@ -254,6 +282,39 @@ private:
   std::string mString;
   const std::vector<std::string>& mVarNames;
 private:
+  // TODO (19 Jan 2021): make changes to parsing and evaluation necessary to handle boolean functions, max and min calls.
+  //   add in new nodes for SLP.
+  //   add in operators: |, ~, min, max
+  //   preprocess to remove AND, OR, NOT, XOR, give error if used, but not char 2 (at least AND, OR, XOR)
+  //   min(a,b): needs to be handled.
+  //   parsing changes...
+#if 0
+  // Just some of our meanderings related to allowing boolean functions
+  ~ (& *) | +
+  a*b == a & b
+    ~a == 1 + a, char=5, ~0 == 4, ~1 == 3,  ~2 == 2  (char-1)*(1+a)
+  a|b == a*b + a + b
+  a^b == a+b 
+
+  [ AND ] ==> *
+  [ NOT ] ==> ~
+  [ OR ] ==> |
+  [ XOR ] ==> +
+  NOT
+  OR
+  AND == *
+  XOR == +
+    
+    ~ ^ & |
+  ~ & ^ |
+  |, &^, ~
+  &, |, ~, ^
+  a & b & c
+  (a & b ^ c) | (~d) == ((a & b) ^ c) | (~d)
+  a ^ (b & c)
+  a ^ b ^ c == (a ^ b) ^ c == a ^ (b ^ c)
+#endif
+    
   // parse str[begin]..str[end-1].
   int parsePoly(int begin, int end)
   {

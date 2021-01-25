@@ -1,6 +1,6 @@
 all:
 	mkdir -p build
-	cd build && cmake -S ../src -B . && make
+	cd build && cmake -S ../src -B . -DCMAKE_BUILD_TYPE=Release && make
 
 clean:
 	rm -rf build 
@@ -10,6 +10,7 @@ docker:
 
 docker-run:
 	docker run -p 31331:8765 --name cyclone discretedynamics/cyclone:0.1.0 
+# after this, go to browser, load: localhost:31331
 
 docker-bash:
 	docker exec -it cyclone /bin/bash
