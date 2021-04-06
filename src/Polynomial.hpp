@@ -12,12 +12,18 @@
 // make
 // ./simFDS
 
-// TODO for now:
+// TODO for now (to include NOT, OR, AND, MAX, MIN)
+//   1. create all of these nodes
+//   2. evaluator needs to be able to evaluate these kinds of nodes
+//   3. parser: needs to recognize and translate them
 //   constructor working DONE
 //   add in the create nodes functions DONE
 //   evaluation at a point. DONE
 //   print function for the polynomial DONE
 //   parse function: string --> creates a polynomial, or gives an intelligible error.
+
+const char MAX_OPERATOR = '>';
+const char MIN_OPERATOR = '<';
 
 class Polynomial
 {
@@ -44,11 +50,16 @@ class Polynomial
   //  start with
   // [0 1 1 1 0]
 
+  enum class operandType {PLUS, TIMES, POWER, OR, NOT, MAX, MIN};
+  
   struct operand
   {
-    enum { PLUS, TIMES, POWER } op;
-    int first_arg;
-    int second_arg;
+    operandType op;
+    //enum { PLUS, TIMES, POWER, OR, NOT, MAX, MIN} op;
+    // make OR ==> MAX
+    // make AND ==> MIN
+    // make NOT ==> a |--> p-1-a
+    std::vector<int> args;
   };
   
   int mNumStates; // possible values of each variable are 0..mNumState-1, mNumStates must be prime.
@@ -80,6 +91,11 @@ public:
   int variableNode(int var);
   int createPlusNode(int first_loc, int second_loc);
   int createTimesNode(int first_loc, int second_loc);
+
+  int createOrNode(int first_loc, int second_loc);
+  int createNotNode(int first_loc);
+  int createMaxMinNode(int left, int right, char op);
+  
   int exp(int base, int exponent);
   int createPowerNode(int first_loc, int exponent);
   int evaluate(const int pt[]);
